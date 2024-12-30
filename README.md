@@ -1,4 +1,4 @@
-# Nessus Custom Audit
+# Nessus Custom Audit Files
 
 ![Nessus](https://img.shields.io/badge/Nessus-Compatible-green.svg)
 ![Windows](https://img.shields.io/badge/Windows-Compatible-blue.svg)
@@ -9,9 +9,11 @@
 - [Usage Instructions](#usage-instructions)
 - [Audit Scripts Documentation](#audit-scripts-documentation)
   - [1. `windows/Check_Windows_OS_and_Role.audit`](#1-windowscheck_windows_os_and_roleaudit)
+    - When to Use
     - Purpose
     - Key Features
   - [2. `windows/Check_WMI_RemoteRegistry_access.audit`](#2-windowscheck_wmi_remoteregistry_accessaudit)
+    - When to Use
     - Purpose
     - Key Features
 - [Disclaimer](#disclaimer)
@@ -53,6 +55,12 @@ Below are detailed notes for the audit scripts included in the **nessus-custom-a
 
 ### 1. `windows/Check_Windows_OS_and_Role.audit`
 
+
+#### **When to Use**
+
+Use this script alongside the Auth Scan or just before the HCR scan to verify that you have configured the correct server version and server role. This is a more detailed audit script compared to `Check_WMI_RemoteRegistry_access.audit`.
+
+
 #### **Purpose**
 
 This audit script retrieves essential information about the Windows operating system and the role of the server within the network. Specifically, it:
@@ -68,6 +76,11 @@ This audit script retrieves essential information about the Windows operating sy
 ---
 
 ### 2. `windows/Check_WMI_RemoteRegistry_access.audit`
+
+
+#### **When to Use**
+
+Use this script in conjunction with the Auth Scan to ensure that your target server has WMI and Remote Registry access. This is a shorter audit script compared to `windows/Check_Windows_OS_and_Role.audit`.
 
 #### **Purpose**
 
