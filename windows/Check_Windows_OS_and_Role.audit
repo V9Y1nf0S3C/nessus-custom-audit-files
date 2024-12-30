@@ -1,0 +1,384 @@
+<check_type:"Windows" version:"2">
+<group_policy:"CIS Microsoft Windows Server any Benchmark">
+# <custom_item>
+#   type        : REGISTRY_SETTING
+#   description : "Check if Remote Registry is available"
+#   value_type  : POLICY_TEXT
+#   value_data  : "^[Ww][Ii][Nn][Dd][Oo][Ww][Ss].+$"
+#   reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+#   reg_item    : "ProductName"
+#   check_type  : CHECK_REGEX
+# </custom_item>
+# 
+# <custom_item>
+#   type          : WMI_POLICY
+#   description   : "Check if WMI available"
+#   info          : "The DomainRole value corresponds to the type of system role the machine has in a domain. Below are the possible values:
+#                    0: Standalone Workstation
+#                    1: Member Workstation
+#                    2: Standalone Server
+#                    3: Member Server
+#                    4: Backup Domain Controller (BDC)
+#                    5: Primary Domain Controller (PDC)"
+#   value_type    : POLICY_DWORD
+#   value_data    : 0 || 1 || 2 || 3 || 4 || 5
+#   wmi_namespace : "root/CIMV2"
+#   wmi_request   : "select DomainRole from Win32_ComputerSystem"
+#   wmi_attribute : "DomainRole"
+#   wmi_key       : "DomainRole"
+# </custom_item>
+
+
+
+
+<if>
+  <condition type:"AND">
+    <custom_item>
+      type          : WMI_POLICY
+      description   : "Check if WMI available"
+      value_type    : POLICY_DWORD
+      value_data    : 0 || 1 || 2 || 3 || 4 || 5
+      wmi_namespace : "root/CIMV2"
+      wmi_request   : "select DomainRole from Win32_ComputerSystem"
+      wmi_attribute : "DomainRole"
+      wmi_key       : "DomainRole"
+    </custom_item>
+  </condition>
+  <then>
+	<custom_item>
+      type          : WMI_POLICY
+      description   : "Windows role details"
+      info          : "The DomainRole value corresponds to the type of system role the machine has in a domain. Below are the possible values:
+                       0: Standalone Workstation
+                       1: Member Workstation
+                       2: Standalone Server
+                       3: Member Server
+                       4: Backup Domain Controller (BDC)
+                       5: Primary Domain Controller (PDC)"
+      value_type    : POLICY_DWORD
+      value_data    : 0 || 1 || 2 || 3 || 4 || 5
+      wmi_namespace : "root/CIMV2"
+      wmi_request   : "select DomainRole from Win32_ComputerSystem"
+      wmi_attribute : "DomainRole"
+      wmi_key       : "DomainRole"
+	</custom_item>
+    <if>
+      <condition type:"AND">
+        <custom_item>
+          type          : WMI_POLICY
+          description   : "Check if the role is DC"
+          value_type    : POLICY_DWORD
+          value_data    : 4 || 5
+          wmi_namespace : "root/CIMV2"
+          wmi_request   : "select DomainRole from Win32_ComputerSystem"
+          wmi_attribute : "DomainRole"
+          wmi_key       : "DomainRole"
+        </custom_item>
+      </condition>
+    
+      <then>
+        <custom_item>
+          type          : WMI_POLICY
+          description   : "Microsoft DC (Domain Controller) found"
+          value_type    : POLICY_DWORD
+          value_data    : 4 || 5
+          wmi_namespace : "root/CIMV2"
+          wmi_request   : "select DomainRole from Win32_ComputerSystem"
+          wmi_attribute : "DomainRole"
+          wmi_key       : "DomainRole"
+        </custom_item>
+      </then>
+    
+      <else>
+    	<if>
+    	  <condition type:"AND">
+    		<custom_item>
+    		  type          : WMI_POLICY
+    		  description   : "Check if the role is MS Server"
+    		  value_type    : POLICY_DWORD
+    		  value_data    : 2 || 3
+    		  wmi_namespace : "root/CIMV2"
+    		  wmi_request   : "select DomainRole from Win32_ComputerSystem"
+    		  wmi_attribute : "DomainRole"
+    		  wmi_key       : "DomainRole"
+    		</custom_item>
+    	  </condition>
+    
+    	  <then>
+    		<custom_item>
+    		  type          : WMI_POLICY
+    		  description   : "Microsoft MS (Member/Standalone) Server found"
+    		  value_type    : POLICY_DWORD
+    		  value_data    : 2 || 3
+    		  wmi_namespace : "root/CIMV2"
+    		  wmi_request   : "select DomainRole from Win32_ComputerSystem"
+    		  wmi_attribute : "DomainRole"
+    		  wmi_key       : "DomainRole"
+    		</custom_item>
+    	  </then>
+    
+    	  <else>
+    		#<if>
+    		#  <condition type:"AND">
+    		#	<custom_item>
+    		#	  type          : WMI_POLICY
+    		#	  description   : "Check if the role is Workstation"
+    		#	  value_type    : POLICY_DWORD
+    		#	  value_data    : 0 || 1
+    		#	  wmi_namespace : "root/CIMV2"
+    		#	  wmi_request   : "select DomainRole from Win32_ComputerSystem"
+    		#	  wmi_attribute : "DomainRole"
+    		#	  wmi_key       : "DomainRole"
+    		#	</custom_item>
+    		#  </condition>
+    		#  <then>
+    		#	<custom_item>
+    		#	  type          : WMI_POLICY
+    		#	  description   : "Microsoft Workstation found. May not be a server"
+    		#	  value_type    : POLICY_DWORD
+    		#	  value_data    : 0 || 1
+    		#	  wmi_namespace : "root/CIMV2"
+    		#	  wmi_request   : "select DomainRole from Win32_ComputerSystem"
+    		#	  wmi_attribute : "DomainRole"
+    		#	  wmi_key       : "DomainRole"
+    		#	</custom_item>
+    		#  </then>
+			#
+    		#  <else>
+				<custom_item>
+				  type          : WMI_POLICY
+				  description   : "Not a DC Server / MS Server"
+                  info          : "The DomainRole value corresponds to the type of system role the machine has in a domain. Below are the possible values:
+                                   0: Standalone Workstation
+                                   1: Member Workstation
+                                   2: Standalone Server
+                                   3: Member Server
+                                   4: Backup Domain Controller (BDC)
+                                   5: Primary Domain Controller (PDC)"
+                  value_type    : POLICY_DWORD
+                  value_data    : 2 || 3 || 4 || 5
+				  wmi_namespace : "root/CIMV2"
+				  wmi_request   : "select DomainRole from Win32_ComputerSystem"
+				  wmi_attribute : "DomainRole"
+				  wmi_key       : "DomainRole"
+				</custom_item>
+    		#  </else>
+    		#</if>
+    	  </else>
+    	</if>
+      </else>
+    </if>
+  </then>
+  <else>
+	<custom_item>
+      type          : WMI_POLICY
+      description   : "WMI is not available. Unable to find role (MS/DC)"
+      value_type    : POLICY_DWORD
+      value_data    : 0 || 1 || 2 || 3 || 4 || 5
+      wmi_namespace : "root/CIMV2"
+      wmi_request   : "select DomainRole from Win32_ComputerSystem"
+      wmi_attribute : "DomainRole"
+      wmi_key       : "DomainRole"
+	</custom_item>
+  </else>
+</if>
+
+<if>
+  <condition type:"AND">
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "Check if Remote Registry is available"
+      value_type  : POLICY_TEXT
+      value_data  : "^[Ww][Ii][Nn][Dd][Oo][Ww][Ss].+$"
+      reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+      reg_item    : "ProductName"
+      check_type  : CHECK_REGEX
+    </custom_item>
+  </condition>
+  <then>
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "Windows OS version details"
+      value_type  : POLICY_TEXT
+      value_data  : "^[Ww][Ii][Nn][Dd][Oo][Ww][Ss].+$"
+      reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+      reg_item    : "ProductName"
+      check_type  : CHECK_REGEX
+    </custom_item>
+	<if>
+	  <condition type:"AND">
+		<custom_item>
+		  type        : REGISTRY_SETTING
+		  description : "Windows Server 2022 is installed"
+		  value_type  : POLICY_TEXT
+		  value_data  : "^[a-zA-Z0-9\(\)\s]*2022[\s]*[a-zA-Z0-9\(\)\s:]*$"
+		  reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+		  reg_item    : "ProductName"
+		  check_type  : CHECK_REGEX
+		</custom_item>
+	  </condition>
+
+	  <then>
+		<report type:"PASSED">
+		  description : "Windows Server 2022 found"
+		</report>
+	  </then>
+
+	  <else>
+		<if>
+		  <condition type:"AND">
+			<custom_item>
+			  type        : REGISTRY_SETTING
+			  description : "Windows Server 2019 is installed"
+			  value_type  : POLICY_TEXT
+			  value_data  : "^[a-zA-Z0-9\(\)\s]*2019[\s]*[a-zA-Z0-9\(\)\s:]*$"
+			  reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+			  reg_item    : "ProductName"
+			  check_type  : CHECK_REGEX
+			</custom_item>
+		  </condition>
+
+		  <then>
+			<report type:"PASSED">
+			  description : "Windows Server 2019 found"
+			</report>
+		  </then>
+
+		  <else>
+			<if>
+			  <condition type:"AND">
+				<custom_item>
+				  type        : REGISTRY_SETTING
+				  description : "Windows Server 2016 is installed"
+				  value_type  : POLICY_TEXT
+				  value_data  : "^[a-zA-Z0-9\(\)\s]*2016[\s]*[a-zA-Z0-9\(\)\s]*$"
+				  reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+				  reg_item    : "ProductName"
+				  check_type  : CHECK_REGEX
+				</custom_item>
+			  </condition>
+			  <then>
+				<report type:"PASSED">
+				  description : "Windows Server 2016 found"
+				</report>
+			  </then>
+
+			  <else>
+				<if>
+				  <condition type:"AND">
+					<custom_item>
+					  type        : REGISTRY_SETTING
+					  description : "Windows Server 2025 is installed"
+					  value_type  : POLICY_TEXT
+					  value_data  : "^[a-zA-Z0-9\(\)\s]*2025[\s]*[a-zA-Z0-9\(\)\s]*$"
+					  reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+					  reg_item    : "ProductName"
+					  check_type  : CHECK_REGEX
+					</custom_item>
+				  </condition>
+				  <then>
+					<report type:"PASSED">
+					  description : "Windows Server 2025 found"
+					</report>
+				  </then>
+
+				  <else>
+					<if>
+					  <condition type:"AND">
+						<custom_item>
+						 type        : REGISTRY_SETTING
+						 description : "Windows Server 2012 R2 is installed"
+						 value_type  : POLICY_TEXT
+						 value_data  : "^[a-zA-Z0-9\(\)\s]*2012[\s]*R2[a-zA-Z0-9\(\)\s]*$"
+						 reg_key     : "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+						 reg_item    : "ProductName"
+						 check_type  : CHECK_REGEX
+						</custom_item>
+					  </condition>
+					  <then>
+						<report type:"PASSED">
+						  description : "Windows Server 2012 R2 found"
+						</report>
+					  </then>
+					  <else>
+						<if>
+						  <condition type:"AND">
+							<custom_item>
+							  type        : REGISTRY_SETTING
+							  description : "Windows Server 2012 is installed"
+							  value_type  : POLICY_TEXT
+							  value_data  : "^[a-zA-Z0-9\(\)\s]*2012(?!\s[rR]2)[a-zA-Z0-9\(\)\s]*$"
+							  reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+							  reg_item    : "ProductName"
+							  check_type  : CHECK_REGEX
+							</custom_item>
+						  </condition>
+						  <then>
+							<report type:"PASSED">
+							  description : "Windows Server 2012 found"
+							</report>
+						  </then>
+						  <else>
+							<custom_item>
+							  type        : REGISTRY_SETTING
+							  description : "Not a Windows 2025 / 2022 / 2019 / 2016 / 2012-R2 / 2012 OS"
+							  value_type  : POLICY_TEXT
+							  value_data  : "WARNING"
+							  reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+							  reg_item    : "ProductName"
+							  check_type  : CHECK_REGEX
+							</custom_item>
+						  </else>
+						</if>
+					  </else>
+					</if>
+				  </else>
+				</if>
+			  </else>
+			</if>
+		  </else>
+		</if>
+	  </else>
+	</if>
+  </then>
+  <else>
+	<custom_item>
+      type        : REGISTRY_SETTING
+      description : "Remote Registry is not available. Unable to find OS version"
+      value_type  : POLICY_TEXT
+      value_data  : "^[Ww][Ii][Nn][Dd][Oo][Ww][Ss].+$"
+      reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+      reg_item    : "ProductName"
+      check_type  : CHECK_REGEX
+	</custom_item>
+  </else>
+</if>
+</group_policy>
+</check_type>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

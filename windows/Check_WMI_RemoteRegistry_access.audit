@@ -1,0 +1,32 @@
+<check_type:"Windows" version:"2">
+<group_policy:"CIS Microsoft Windows Server any Benchmark">
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "Check if Remote Registry is available"
+      value_type  : POLICY_TEXT
+      value_data  : "^[Ww][Ii][Nn][Dd][Oo][Ww][Ss].+$"
+      reg_key     : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+      reg_item    : "ProductName"
+      check_type  : CHECK_REGEX
+    </custom_item>
+	
+    <custom_item>
+      type          : WMI_POLICY
+      description   : "Check if WMI available"
+      info          : "The DomainRole value corresponds to the type of system role the machine has in a domain. Below are the possible values:
+                       0: Standalone Workstation
+                       1: Member Workstation
+                       2: Standalone Server
+                       3: Member Server
+                       4: Backup Domain Controller (BDC)
+                       5: Primary Domain Controller (PDC)"
+      value_type    : POLICY_DWORD
+      value_data    : 0 || 1 || 2 || 3 || 4 || 5
+      wmi_namespace : "root/CIMV2"
+      wmi_request   : "select DomainRole from Win32_ComputerSystem"
+      wmi_attribute : "DomainRole"
+      wmi_key       : "DomainRole"
+    </custom_item>
+	
+</group_policy>
+</check_type>
