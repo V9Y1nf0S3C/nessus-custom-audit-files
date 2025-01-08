@@ -1,0 +1,45 @@
+<check_type:"Unix">
+    <custom_item>
+      type        : FILE_CONTENT_CHECK
+      description : "Check if SSH available - 1 [/etc/system-release] (1 of 2 is fine)"
+      file        : "/etc/system-release"
+      regex       : "^.*$"
+      expect      : "^.*$"
+    </custom_item>
+	
+    <custom_item>
+      type        : FILE_CONTENT_CHECK
+      description : "Check if SSH available - 2 [/etc/os-release] (1 of 2 is fine)"
+      file        : "/etc/os-release"
+      regex       : "^.*$"
+      expect      : "^.*$"
+    </custom_item>
+	
+    <custom_item>
+      system      : "Linux"
+      type        : CMD_EXEC
+      description : "Check if sudo privileges present - 1"
+      cmd         : "cat /etc/sudoers"
+      regex       : "^User[[:space:]]+\S+[[:space:]]+may[[:space:]]+run[[:space:]]+the[[:space:]]+following[[:space:]]+commands[[:space:]]+on[[:space:]]+this[[:space:]]+host:"
+      expect      : "^User[[:space:]]+\S+[[:space:]]+may[[:space:]]+run[[:space:]]+the[[:space:]]+following[[:space:]]+commands[[:space:]]+on[[:space:]]+this[[:space:]]+host:"
+    </custom_item>
+
+
+    <custom_item>
+      system      : "Linux"
+      type        : CMD_EXEC
+      description : "Check if sudo privileges present - 2"
+      cmd         : "cat /etc/sudoers"
+      regex       : "(^|[^[:alnum:]_])(ALL|root)([^[:alnum:]_]|$)"
+      expect      : "(^|[^[:alnum:]_])(ALL|root)([^[:alnum:]_]|$)"
+    </custom_item>
+
+	
+    <custom_item>
+      system      : "Linux"
+      type        : CMD_EXEC
+      description : "Check if sudo privileges present - 3"
+      cmd         : "sudo -n true 2>/dev/null && echo \"Sudo privileges present\" || echo \"Don't have sudo privileges\""
+      expect      : "Sudo privileges present"
+    </custom_item>
+</check_type>

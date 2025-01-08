@@ -1,0 +1,17 @@
+<check_type:"Unix">
+    <custom_item>
+      type        : FILE_CONTENT_CHECK
+      description : "Check if SSH available - 1 [/etc/system-release] (1 of 2 is fine)"
+      file        : "/etc/system-release"
+      regex       : "^.*$"
+      expect      : "^.*$"
+    </custom_item>
+	
+    <custom_item>
+      type        : FILE_CONTENT_CHECK
+      description : "Check if SSH available - 2 [/etc/os-release] (1 of 2 is fine)"
+      file        : "/etc/os-release"
+      regex       : "^.*$"
+      expect      : "^.*$"
+    </custom_item>
+</check_type>
